@@ -93,7 +93,7 @@
 
             });
 
-            this.$axios.get('http://127.0.0.1:8000/api/test').then((response) => {
+            this.$axios.get('http://127.0.0.1:8000/api').then((response) => {
                 console.log(response)
                 console.log(response.data.volume)
                 this.saturation = response.data.volume});
@@ -129,12 +129,12 @@
             editItem: function (index, rows) {
                 this.dialogFormVisible = true;
                 const itemId = rows[index].id;
-                const idurl = 'http://127.0.0.1:8000/api/detail/' + itemId;
-                this.$axios.get(idurl).then((response) => {
-                    this.form = response.data;
-                }).catch(function (response) {
-                    console.log(response)
-                });
+                // const idurl = 'http://127.0.0.1:8000/api/detail/' + itemId;
+                // this.$axios.get(idurl).then((response) => {
+                //     this.form = response.data;
+                // }).catch(function (response) {
+                //     console.log(response)
+                // });
             },
 
             formatter(row, column) {
