@@ -7,6 +7,8 @@ import com.boylegu.springboot_vue.controller.dto.response.UserListResponseDto;
 import com.boylegu.springboot_vue.dto.UserDto;
 
 import com.boylegu.springboot_vue.dto.UserPantryDto;
+import com.boylegu.springboot_vue.entities.User;
+import com.boylegu.springboot_vue.entities.UserPantry;
 import com.boylegu.springboot_vue.service.user.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,14 +39,15 @@ public class MainController {
     }
 
     @GetMapping(value = "/{id}/pantry", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Map<Integer, Integer>> findUserPantry(@NotNull @PathVariable("id") UUID id) throws Exception {
+    public ResponseEntity<List<UserPantry>> findUserPantry(@NotNull @PathVariable("id") UUID id) throws Exception {
         return ResponseEntity.ok(userService.getUserPantry(id));
     }
 
-    @PostMapping(value = "/{id}/pantry", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{id}/pantry")
     public ResponseEntity addToUserPantry(@NotNull @PathVariable("id") UUID id,
-                                          @RequestParam("sku") int sku, @RequestParam("value") int value) throws Exception {
-        userService.addToPantry(id, sku, value);
+                                          @RequestParam("sku") int sku, @RequestParam("value") int value,
+    @RequestParam("unit") String unit, @RequestParam("name") String name) throws Exception {
+        userService.addToPantry(id, sku, value, unit, name);
         return ResponseEntity.ok().build();
     }
 
@@ -61,9 +64,8 @@ public class MainController {
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> login(@Validated @RequestBody LoginRequestDto loginRequestDto) throws Exception{
-        userService.login(loginRequestDto);
-        return ResponseEntity.ok("Logged in Succesfully");
+    public ResponseEntity<UserDto> login(@Validated @RequestBody LoginRequestDto loginRequestDto) throws Exception{
+        return ResponseEntity.ok(userService.login(loginRequestDto));
     }
 
 

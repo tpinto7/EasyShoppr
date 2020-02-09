@@ -12,6 +12,8 @@ import java.util.UUID;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class UserPantryDto {
-    String sku;
-    String value;
+    private int sku;
+    private int value;
+    private String name;
+    private String unit;
 }

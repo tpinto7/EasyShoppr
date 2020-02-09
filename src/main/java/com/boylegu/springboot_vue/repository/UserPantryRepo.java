@@ -12,4 +12,5 @@ import java.util.UUID;
 
 public interface UserPantryRepo extends JpaRepository<UserPantry, UUID> {
   List<UserPantry> findAllByUserId(UUID id);
+  Optional<UserPantry> findOneByUserIdAndSku(UUID id, int sku);
 }

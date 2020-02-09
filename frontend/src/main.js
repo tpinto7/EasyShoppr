@@ -3,6 +3,7 @@
  */
 
 import Vue from 'vue'
+import UserStore from './store/User';
 import {
     Button,
     Select,
@@ -60,6 +61,9 @@ locale.use(lang);
 // eslint-disable-next-line no-new
 new Vue({
     el: '#app',
+    data: {
+        userStore: UserStore
+    },
     render: h => h(App)
 });
 

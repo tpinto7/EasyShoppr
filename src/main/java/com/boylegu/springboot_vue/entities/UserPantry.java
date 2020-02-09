@@ -18,6 +18,8 @@ public class UserPantry {
     private static final String COLUMN_NAME_USER = "local_user_id";
     private static final String COLUMN_NAME_SKU = "sku";
     private static final String COLUMN_NAME_VALUE = "value";
+    private static final String COLUMN_NAME_NAME = "name";
+    private static final String COLUMN_NAME_UNIT = "unit";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,4 +33,10 @@ public class UserPantry {
 
     @Column(name = COLUMN_NAME_VALUE)
     private int value;
+
+    @Column(name = COLUMN_NAME_UNIT)
+    private String unit;
+
+    @Column(name = COLUMN_NAME_NAME)
+    private String name;
 }

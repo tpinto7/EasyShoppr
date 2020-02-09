@@ -13,6 +13,7 @@ import com.boylegu.springboot_vue.entities.UserPassword;
 import com.boylegu.springboot_vue.repository.UserPantryRepo;
 import com.boylegu.springboot_vue.repository.UserPasswordRepo;
 import com.boylegu.springboot_vue.repository.UserRepo;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements  UserService {
 
         UserListResponseDto userListResponseDto = new UserListResponseDto(new ArrayList<>());
         for (User user : userEntities) {
-            UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
+            UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
             List<UserDto> userDtoList = userListResponseDto.getData();
             userDtoList.add(userDto);
             userListResponseDto.setData(userDtoList);
@@ -57,7 +58,7 @@ public class UserServiceImpl implements  UserService {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            return new UserDto(userId, user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
+            return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
         }
         throw new Exception("User with id: " + userId + "does not exist.");
     }
@@ -72,7 +73,7 @@ public class UserServiceImpl implements  UserService {
 
         userRepo.save(user);
 
-        return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
+        return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
     }
 
     @Override
@@ -110,7 +111,7 @@ public class UserServiceImpl implements  UserService {
             localUserPassword.setSalt(salt);
             userPasswordRepo.save(localUserPassword);
 
-            return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
+            return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
 
         }
         throw new Exception("User with id: " + userId + "does not exist.");
@@ -118,7 +119,7 @@ public class UserServiceImpl implements  UserService {
 
     @Override
     @Transactional()
-    public void login(LoginRequestDto loginDto) throws Exception {
+    public UserDto login(LoginRequestDto loginDto) throws Exception {
 //        if (StringUtils.isBlank(username)) {
 //            throw new IllegalArgumentException("username cannot be empty/null");
 //        }
@@ -126,7 +127,7 @@ public class UserServiceImpl implements  UserService {
 //            throw new IllegalArgumentException("password cannot be empty/null");
 //        }
 
-        Optional<User> userOptional = userRepo.findOneByUsername(loginDto.getUsername());
+        Optional<User> userOptional = userRepo.findOneByEmailAddress(loginDto.getEmail());
         if (!userOptional.isPresent()) {
             throw new Exception("Username does not exist.");
         }
@@ -146,28 +147,37 @@ public class UserServiceImpl implements  UserService {
         if (!Arrays.equals(actualPassword, encryptedPassword)) {
             throw new Exception("Password is invalid.");
         }
+        return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
+
     }
 
     @Override
     @Transactional()
-    public void addToPantry(UUID userId, int sku, int value) {
-        UserPantry userPantry = new UserPantry();
-        System.out.println(userId);
-        userPantry.setUserId(userId);
-        userPantry.setSku(sku);
-        userPantry.setValue(value);
-        System.out.println("12345");
-System.out.println(userPantry.getUserId());
-        userPantryRepo.save(userPantry);
+    public void addToPantry(UUID userId, int sku, int value, String unit, String name) {
+        Optional<UserPantry> userPantryOptional = userPantryRepo.findOneByUserIdAndSku(userId, sku);
+        if(userPantryOptional.isPresent()){
+            UserPantry userPantry = userPantryOptional.get();
+            userPantry.setValue( userPantry.getValue() + value);
+        }
+        else {
+            UserPantry userPantry = new UserPantry();
+
+            userPantry.setUserId(userId);
+            userPantry.setSku(sku);
+            userPantry.setValue(value);
+            userPantry.setUnit(unit);
+            userPantry.setName(name);
+
+            userPantryRepo.save(userPantry);
+        }
     }
 
 
 
     @Override
-    public Map<Integer, Integer> getUserPantry(UUID id) throws Exception{
+    public List<UserPantry> getUserPantry(UUID id) throws Exception{
         List<UserPantry> pantry =  userPantryRepo.findAllByUserId(id);
-        return pantry.stream().collect(
-                Collectors.toMap(UserPantry::getSku, UserPantry::getValue));
+        return pantry;
     }
 
 }

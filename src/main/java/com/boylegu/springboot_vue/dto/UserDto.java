@@ -18,5 +18,4 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String emailAddress;
-    private Map<Integer, Integer> pantry;
 }
