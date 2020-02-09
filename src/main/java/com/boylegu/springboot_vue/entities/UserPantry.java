@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "UserPantry")
 public class UserPantry {
-    private static final String COLUMN_NAME_LOCAL_USER = "local_user_id";
+    private static final String COLUMN_NAME_USER = "local_user_id";
     private static final String COLUMN_NAME_SKU = "sku";
     private static final String COLUMN_NAME_VALUE = "value";
 
@@ -23,9 +23,8 @@ public class UserPantry {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name=COLUMN_NAME_LOCAL_USER, nullable=false)
-    private User user;
+ @Column(name = COLUMN_NAME_USER)
+    private UUID userId;
 
     @Column(name = COLUMN_NAME_SKU)
     private int sku;

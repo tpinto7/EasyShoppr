@@ -20,7 +20,7 @@
         </b-nav-form> -->
 
   <i class="fa fa-fw fa-shopping-cart" style="font-size:36px;"></i>
-  <i class="fa fa-fw fa-user" style="font-size:36px;" right></i>
+  <i class="fa fa-fw fa-user" style="font-size:36px;" right v-b-modal.loginModal></i>
         <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
         
@@ -41,16 +41,17 @@
       </div>
   <!--  -->
 </div>
+<login-modal @refreshGrid="clear"></login-modal>
 </div>
 
 </template>
 
 <script>
-
+import LoginModal from './components/LoginModal';
     export default {
         name: 'app',
         components: {
-
+            'login-modal': LoginModal
         },
         data(){
             return{
@@ -177,15 +178,22 @@
          
         },
         methods: {
-            addToCart: function(){
+            addToCart: async function(){
                 let product = this.recipes[this.currentIndex].wegmansProduct;
-                let baseUrl = 'https://api.wegmans.io/products/search?query=Wegmans+Garlic,+Peeled&api-version=2018-10-18&subscription-key={{Your-Subscription-Key}}'
+        
+                
                 for(let i = 0; i < product.length; i ++){
                     console.log(product[i].productName);
+                    let sku;
                     let baseUrl = 'https://api.wegmans.io/products/search?query=' + product[i].productName + '&api-version=2018-10-18&subscription-key=' + this.subKey;
-                     this.$axios.get(baseUrl).then((response) => {
-                console.log(response.data.results[0])
+                     await this.$axios.get(baseUrl).then((response) => {
+                    sku = response.data.results[0].sku;
+                    console.log(sku);
                 });
+                let skuUrl = 'https://api.wegmans.io/products/' + sku + '?api-version=2018-10-18&Subscription-Key=' + this.subKey;
+                    this.$axios.get(skuUrl).then((response) => {
+                        console.log(response);
+                    });
                 }
             }
         }

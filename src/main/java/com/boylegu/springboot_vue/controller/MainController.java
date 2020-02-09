@@ -6,6 +6,7 @@ import com.boylegu.springboot_vue.controller.dto.request.UserCreateDto;
 import com.boylegu.springboot_vue.controller.dto.response.UserListResponseDto;
 import com.boylegu.springboot_vue.dto.UserDto;
 
+import com.boylegu.springboot_vue.dto.UserPantryDto;
 import com.boylegu.springboot_vue.service.user.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,13 @@ public class MainController {
         return ResponseEntity.ok(userService.getUserPantry(id));
     }
 
+    @PostMapping(value = "/{id}/pantry", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity addToUserPantry(@NotNull @PathVariable("id") UUID id,
+                                          @RequestParam("sku") int sku, @RequestParam("value") int value) throws Exception {
+        userService.addToPantry(id, sku, value);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping(value = "", consumes =  MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity <UserDto> createUser(@Validated @RequestBody UserCreateDto user){
         return ResponseEntity.ok(userService.createUser(user));
@@ -57,6 +65,8 @@ public class MainController {
         userService.login(loginRequestDto);
         return ResponseEntity.ok("Logged in Succesfully");
     }
+
+
 
 
 //

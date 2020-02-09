@@ -6,6 +6,7 @@ import com.boylegu.springboot_vue.controller.dto.request.LoginRequestDto;
 import com.boylegu.springboot_vue.controller.dto.request.UserCreateDto;
 import com.boylegu.springboot_vue.controller.dto.response.UserListResponseDto;
 import com.boylegu.springboot_vue.dto.UserDto;
+import com.boylegu.springboot_vue.dto.UserPantryDto;
 import com.boylegu.springboot_vue.entities.User;
 import com.boylegu.springboot_vue.entities.UserPantry;
 import com.boylegu.springboot_vue.entities.UserPassword;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements  UserService{
+public class UserServiceImpl implements  UserService {
     @Autowired
     UserRepo userRepo;
 
@@ -34,21 +35,21 @@ public class UserServiceImpl implements  UserService{
     UserPantryRepo userPantryRepo;
 
     @Override
-    public UserListResponseDto getUserList() throws Exception{
+    public UserListResponseDto getUserList() throws Exception {
         List<User> userEntities = userRepo.findAll();
 
         UserListResponseDto userListResponseDto = new UserListResponseDto(new ArrayList<>());
-        for(User user: userEntities) {
+        for (User user : userEntities) {
             UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
             List<UserDto> userDtoList = userListResponseDto.getData();
             userDtoList.add(userDto);
             userListResponseDto.setData(userDtoList);
         }
-    return userListResponseDto;
+        return userListResponseDto;
     }
 
     @Override
-    public UserDto getUserById(UUID userId) throws Exception{
+    public UserDto getUserById(UUID userId) throws Exception {
         if (Objects.isNull(userId)) {
             throw new IllegalArgumentException("id cannot be empty/null");
         }
@@ -62,7 +63,7 @@ public class UserServiceImpl implements  UserService{
     }
 
     @Override
-    public UserDto createUser(UserCreateDto userCreateDto){
+    public UserDto createUser(UserCreateDto userCreateDto) {
         User user = new User();
         user.setEmailAddress(userCreateDto.getEmailAddress());
         user.setFirstName(userCreateDto.getFirstName());
@@ -83,7 +84,7 @@ public class UserServiceImpl implements  UserService{
 
         Optional<User> userEntityOptional = userRepo.findOneById(userId);
         if (userEntityOptional.isPresent()) {
-           User user = userEntityOptional.get();
+            User user = userEntityOptional.get();
 
 //            ArrayList<String> errors = validPassword(password, localUserEntity);
 //            if (errors.size() != 0) {
@@ -97,7 +98,7 @@ public class UserServiceImpl implements  UserService{
 
             List<UserPassword> ineffectivePasswords =
                     userPasswordRepo.findByUserAndIneffectiveIsNull(user);
-            for(int i = 0; i < ineffectivePasswords.size(); i ++ ){
+            for (int i = 0; i < ineffectivePasswords.size(); i++) {
                 UserPassword oldPassword = ineffectivePasswords.get(i);
                 oldPassword.setIneffective(LocalDateTime.now());
             }
@@ -117,7 +118,7 @@ public class UserServiceImpl implements  UserService{
 
     @Override
     @Transactional()
-    public void login(LoginRequestDto loginDto) throws Exception{
+    public void login(LoginRequestDto loginDto) throws Exception {
 //        if (StringUtils.isBlank(username)) {
 //            throw new IllegalArgumentException("username cannot be empty/null");
 //        }
@@ -147,7 +148,20 @@ public class UserServiceImpl implements  UserService{
         }
     }
 
-    
+    @Override
+    @Transactional()
+    public void addToPantry(UUID userId, int sku, int value) {
+        UserPantry userPantry = new UserPantry();
+        System.out.println(userId);
+        userPantry.setUserId(userId);
+        userPantry.setSku(sku);
+        userPantry.setValue(value);
+        System.out.println("12345");
+System.out.println(userPantry.getUserId());
+        userPantryRepo.save(userPantry);
+    }
+
+
 
     @Override
     public Map<Integer, Integer> getUserPantry(UUID id) throws Exception{
