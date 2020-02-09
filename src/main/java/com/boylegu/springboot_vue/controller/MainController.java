@@ -31,8 +31,13 @@ public class MainController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UserDto> findLocalUserById(@NotNull @PathVariable("id") UUID id) throws Exception {
+    public ResponseEntity<UserDto> findUserById(@NotNull @PathVariable("id") UUID id) throws Exception {
         return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping(value = "/{id}/pantry", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Map<Integer, Integer>> findUserPantry(@NotNull @PathVariable("id") UUID id) throws Exception {
+        return ResponseEntity.ok(userService.getUserPantry(id));
     }
 
     @PostMapping(value = "", consumes =  MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -52,6 +57,8 @@ public class MainController {
         userService.login(loginRequestDto);
         return ResponseEntity.ok("Logged in Succesfully");
     }
+
+
 //
 //    @DeleteMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 //    public ResponseEntity<List<DeleteUserResponseDto>> deleteLocalUserList(@NotNull @RequestBody DeleteUserRequestDto deleteUserDto)

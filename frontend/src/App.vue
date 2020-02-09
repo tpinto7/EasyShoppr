@@ -54,6 +54,7 @@
         },
         data(){
             return{
+                subKey: '0980a1855df1499891dbc1489414132b',
                 recipes: [  {
    "recipeName": "Acorn Squash with Asian Flavors",
    "url": "https://shop.wegmans.com/recipes/2995/asian-cauliflower-rice-lettuce-wraps",
@@ -177,9 +178,14 @@
         },
         methods: {
             addToCart: function(){
-                console.log("test");
-                for(let i = 0; i < this.recipes[this.currentIndex]; i ++){
-                    
+                let product = this.recipes[this.currentIndex].wegmansProduct;
+                let baseUrl = 'https://api.wegmans.io/products/search?query=Wegmans+Garlic,+Peeled&api-version=2018-10-18&subscription-key={{Your-Subscription-Key}}'
+                for(let i = 0; i < product.length; i ++){
+                    console.log(product[i].productName);
+                    let baseUrl = 'https://api.wegmans.io/products/search?query=' + product[i].productName + '&api-version=2018-10-18&subscription-key=' + this.subKey;
+                     this.$axios.get(baseUrl).then((response) => {
+                console.log(response.data.results[0])
+                });
                 }
             }
         }

@@ -7,7 +7,9 @@ import com.boylegu.springboot_vue.controller.dto.request.UserCreateDto;
 import com.boylegu.springboot_vue.controller.dto.response.UserListResponseDto;
 import com.boylegu.springboot_vue.dto.UserDto;
 import com.boylegu.springboot_vue.entities.User;
+import com.boylegu.springboot_vue.entities.UserPantry;
 import com.boylegu.springboot_vue.entities.UserPassword;
+import com.boylegu.springboot_vue.repository.UserPantryRepo;
 import com.boylegu.springboot_vue.repository.UserPasswordRepo;
 import com.boylegu.springboot_vue.repository.UserRepo;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,13 +30,16 @@ public class UserServiceImpl implements  UserService{
     @Autowired
     UserPasswordRepo userPasswordRepo;
 
+    @Autowired
+    UserPantryRepo userPantryRepo;
+
     @Override
     public UserListResponseDto getUserList() throws Exception{
         List<User> userEntities = userRepo.findAll();
 
         UserListResponseDto userListResponseDto = new UserListResponseDto(new ArrayList<>());
         for(User user: userEntities) {
-            UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
+            UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
             List<UserDto> userDtoList = userListResponseDto.getData();
             userDtoList.add(userDto);
             userListResponseDto.setData(userDtoList);
@@ -50,7 +56,7 @@ public class UserServiceImpl implements  UserService{
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            return new UserDto(userId, user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
+            return new UserDto(userId, user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
         }
         throw new Exception("User with id: " + userId + "does not exist.");
     }
@@ -65,7 +71,7 @@ public class UserServiceImpl implements  UserService{
 
         userRepo.save(user);
 
-        return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
+        return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
     }
 
     @Override
@@ -103,7 +109,7 @@ public class UserServiceImpl implements  UserService{
             localUserPassword.setSalt(salt);
             userPasswordRepo.save(localUserPassword);
 
-            return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
+            return new UserDto(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress(), new HashMap<Integer, Integer>());
 
         }
         throw new Exception("User with id: " + userId + "does not exist.");
@@ -139,6 +145,15 @@ public class UserServiceImpl implements  UserService{
         if (!Arrays.equals(actualPassword, encryptedPassword)) {
             throw new Exception("Password is invalid.");
         }
+    }
+
+    
+
+    @Override
+    public Map<Integer, Integer> getUserPantry(UUID id) throws Exception{
+        List<UserPantry> pantry =  userPantryRepo.findAllByUserId(id);
+        return pantry.stream().collect(
+                Collectors.toMap(UserPantry::getSku, UserPantry::getValue));
     }
 
 }
