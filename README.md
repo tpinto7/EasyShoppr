@@ -3,7 +3,7 @@ EasyShoppr is a Pantry Management Tool to automate a user's shopping process. It
 
 The user can log in to have their pantry information saved in the SpringBoot backend. 
 
-![Log In](login.png)
+![Log In](https://github.com/tpinto7/EasyShoppr/login.png)
 
 
 To start the frontend: 
